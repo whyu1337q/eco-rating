@@ -1,0 +1,5 @@
+# Supabase configuration
+# Copy this file to app/supabase-config.txt and fill in both values before running the app.
+
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-publishable-or-anon-key

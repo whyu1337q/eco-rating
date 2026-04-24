@@ -1,0 +1,8 @@
+{
+  "appId": "ru.ecorating.app",
+  "appName": "Эко-рейтинг",
+  "webDir": "app",
+  "server": {
+    "androidScheme": "https"
+  }
+}

@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#fcf8fa" />
+    <title>Эко-рейтинг</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <div class="app-shell-toolbar">
+        <label class="compact-field appearance-field">
+          <span>Тема</span>
+          <select id="appearanceSelect" aria-label="Тема оформления">
+            <option value="system">Системная</option>
+            <option value="light">Светлая</option>
+            <option value="dark">Тёмная</option>
+          </select>
+        </label>
+      </div>
+
+      <section id="authView" class="auth-layout">
+        <div class="auth-copy">
+          <p class="eyebrow">Эко-рейтинг</p>
+          <h1>Учёт сдачи вторсырья и онлайн-рейтинг участников</h1>
+          <p>
+            Регистрация по телефону, фиксация фракций и веса, автоматическое
+            суммирование результата и общая таблица лидеров на Supabase.
+          </p>
+          <div class="auth-metrics" aria-label="Ключевые возможности">
+            <span>Телефон</span>
+            <span>Фракции</span>
+            <span>Килограммы</span>
+            <span>Live-таблица</span>
+          </div>
+        </div>
+
+        <div class="auth-stack">
+          <form id="authForm" class="panel auth-panel" novalidate>
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Вход</p>
+                <h2>Профиль участника</h2>
+              </div>
+              <span id="syncBadgeLogin" class="status-badge offline">Оффлайн</span>
+            </div>
+
+            <label class="field">
+              <span>Имя</span>
+              <input
+                id="nameInput"
+                name="name"
+                type="text"
+                autocomplete="name"
+                placeholder="Например, Анна"
+                maxlength="40"
+              />
+            </label>
+
+            <div class="field">
+              <span>Номер телефона</span>
+              <div class="phone-row">
+                <label class="country-select-wrap" aria-label="Страна и код">
+                  <select id="countryInput" name="country" autocomplete="country-name">
+                  </select>
+                </label>
+                <input
+                  id="phoneInput"
+                  name="phone"
+                  type="tel"
+                  autocomplete="tel-national"
+                  placeholder="900 000 00 00"
+                  required
+                />
+              </div>
+            </div>
+
+            <div id="lastAccountCard" class="last-account-card is-hidden">
+              <div>
+                <span>Последний аккаунт</span>
+                <strong id="lastAccountName">Участник</strong>
+                <small id="lastAccountPhone">Телефон</small>
+              </div>
+              <button id="lastAccountButton" class="ghost-button" type="button">
+                Войти снова
+              </button>
+            </div>
+
+            <p id="authError" class="form-error" role="alert"></p>
+
+            <button id="authSubmitButton" class="primary-button" type="submit">
+              Продолжить
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <section id="dashboardView" class="dashboard is-hidden" aria-live="polite">
+        <header class="topbar">
+          <div class="topbar-title">
+            <p class="eyebrow">Эко-рейтинг</p>
+            <h1>Панель экологической активности</h1>
+          </div>
+          <div class="topbar-actions">
+            <div class="sync-card">
+              <span id="syncBadgeDashboard" class="status-badge offline">Оффлайн</span>
+              <small id="syncMeta">Нет подключения к Supabase</small>
+            </div>
+            <div class="user-strip">
+              <div>
+                <span id="currentUserName">Участник</span>
+                <small id="currentUserPhone">Телефон</small>
+              </div>
+              <button id="logoutButton" class="ghost-button" type="button">Выйти</button>
+            </div>
+          </div>
+        </header>
+
+        <nav class="mobile-section-nav" aria-label="Разделы приложения">
+          <button class="mobile-section-button is-active" type="button" data-mobile-section-button="overview">
+            Обзор
+          </button>
+          <button class="mobile-section-button" type="button" data-mobile-section-button="entry">
+            Сдать
+          </button>
+          <button class="mobile-section-button" type="button" data-mobile-section-button="leaderboard">
+            Рейтинг
+          </button>
+          <button class="mobile-section-button" type="button" data-mobile-section-button="history">
+            История
+          </button>
+        </nav>
+
+        <section class="stats-grid" aria-label="Сводные показатели" data-mobile-pane="overview">
+          <article class="stat-card">
+            <span>Мой результат</span>
+            <strong id="myTotalWeight">0 кг</strong>
+            <small id="myRankText">Рейтинг появится после первой сдачи</small>
+          </article>
+          <article class="stat-card">
+            <span>Всего в системе</span>
+            <strong id="globalTotalWeight">0 кг</strong>
+            <small id="globalEntriesText">0 записей активности</small>
+          </article>
+          <article class="stat-card">
+            <span>Участники</span>
+            <strong id="usersCount">0</strong>
+            <small>общая база профилей Supabase</small>
+          </article>
+          <article class="stat-card">
+            <span>Лучшая фракция</span>
+            <strong id="topFraction">-</strong>
+            <small id="topFractionWeight">Нет данных</small>
+          </article>
+        </section>
+
+        <div class="workspace-grid">
+          <section class="panel" data-mobile-pane="entry">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Новая сдача</p>
+                <h2>Добавить вторсырьё</h2>
+              </div>
+            </div>
+
+            <form id="entryForm" class="entry-form" novalidate>
+              <label class="field">
+                <span>Фракция</span>
+                <select id="fractionInput" required>
+                  <option value="Пластик">Пластик</option>
+                  <option value="Бумага">Бумага</option>
+                  <option value="Металл">Металл</option>
+                  <option value="Стекло">Стекло</option>
+                  <option value="Картон">Картон</option>
+                  <option value="Электроника">Электроника</option>
+                  <option value="Другое">Другое</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Вес, кг</span>
+                <input
+                  id="weightInput"
+                  type="number"
+                  min="0.1"
+                  max="10000"
+                  step="0.1"
+                  placeholder="2.5"
+                  required
+                />
+              </label>
+
+              <label class="field field-wide">
+                <span>Комментарий</span>
+                <input
+                  id="commentInput"
+                  type="text"
+                  maxlength="80"
+                  placeholder="Пункт приёма, акция, заметка"
+                />
+              </label>
+
+              <p id="entryError" class="form-error" role="alert"></p>
+              <button id="entrySubmitButton" class="primary-button" type="submit">
+                Зафиксировать
+              </button>
+            </form>
+          </section>
+
+          <section class="panel" data-mobile-pane="overview">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Категории</p>
+                <h2>Моя структура сдачи</h2>
+              </div>
+            </div>
+            <div id="fractionBars" class="bars-list empty-state">
+              Нет данных по фракциям.
+            </div>
+          </section>
+        </div>
+
+        <section class="panel leaderboard-panel" data-mobile-pane="leaderboard">
+          <div class="panel-heading leaderboard-heading">
+            <div>
+              <p class="eyebrow">Рейтинг</p>
+              <h2>Онлайн-таблица участников</h2>
+            </div>
+            <div class="toolbar">
+              <label class="compact-field">
+                <span>Фракция</span>
+                <select id="ratingFractionFilter">
+                  <option value="all">Все</option>
+                  <option value="Пластик">Пластик</option>
+                  <option value="Бумага">Бумага</option>
+                  <option value="Металл">Металл</option>
+                  <option value="Стекло">Стекло</option>
+                  <option value="Картон">Картон</option>
+                  <option value="Электроника">Электроника</option>
+                  <option value="Другое">Другое</option>
+                </select>
+              </label>
+              <label class="compact-field">
+                <span>Сортировка</span>
+                <select id="ratingSort">
+                  <option value="weight">По весу</option>
+                  <option value="name">По имени</option>
+                  <option value="entries">По числу сдач</option>
+                </select>
+              </label>
+              <button id="refreshButton" class="ghost-button toolbar-button" type="button">
+                Обновить
+              </button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Место</th>
+                  <th>Имя</th>
+                  <th>Сдач</th>
+                  <th>Вес</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboardBody"></tbody>
+            </table>
+          </div>
+          <div id="leaderboardCards" class="leaderboard-cards is-hidden"></div>
+        </section>
+
+        <section class="panel history-panel" data-mobile-pane="history">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">История</p>
+              <h2>Последние операции</h2>
+            </div>
+          </div>
+          <div id="historyList" class="history-list empty-state">
+            Записей пока нет.
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="./vendor/supabase.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

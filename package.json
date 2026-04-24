@@ -1,0 +1,53 @@
+{
+  "name": "eco-rating",
+  "version": "1.0.0",
+  "description": "Eco Rating desktop and Android app for recycling activity tracking.",
+  "main": "electron/main.js",
+  "private": true,
+  "author": "Eco Rating",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "android:add": "cap add android",
+    "android:sync": "cap sync android",
+    "android:open": "cap open android",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win nsis",
+    "dist:linux": "electron-builder --linux dir",
+    "dist:linux:packages": "electron-builder --linux AppImage deb"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.2.0",
+    "@capacitor/core": "^7.2.0",
+    "@supabase/supabase-js": "^2.104.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.2.0",
+    "electron": "^41.3.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "ru.ecorating.app",
+    "productName": "Эко-рейтинг",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "app/**/*",
+      "electron/**/*",
+      "icon.ico",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico",
+      "signAndEditExecutable": false
+    },
+    "linux": {
+      "target": [
+        "dir"
+      ],
+      "category": "Utility"
+    }
+  }
+}
